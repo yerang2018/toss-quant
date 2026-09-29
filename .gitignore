@@ -1,0 +1,9 @@
+.env
+*.env
+.venv/
+__pycache__/
+*.pyc
+.cache/
+.token_cache.json
+data/
+logs/
