@@ -17,7 +17,7 @@ class Config:
 
     @classmethod
     def from_env(cls) -> "Config":
-        load_dotenv()
+        load_dotenv(Path(__file__).resolve().parent.parent / ".env")
         cid = os.environ.get("TOSS_CLIENT_ID", "").strip()
         secret = os.environ.get("TOSS_CLIENT_SECRET", "").strip()
         if not cid or not secret:
