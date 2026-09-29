@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 BASE_URL = "https://openapi.tossinvest.com"
+HOME_ENV = Path.home() / ".toss_quant" / ".env"
 TOKEN_CACHE = Path(os.environ.get("TOSS_TOKEN_CACHE", Path.home() / ".cache" / "toss_quant" / "token.json"))
 
 
@@ -18,6 +19,7 @@ class Config:
     @classmethod
     def from_env(cls) -> "Config":
         load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+        load_dotenv(HOME_ENV)
         cid = os.environ.get("TOSS_CLIENT_ID", "").strip()
         secret = os.environ.get("TOSS_CLIENT_SECRET", "").strip()
         if not cid or not secret:

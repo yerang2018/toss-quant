@@ -30,7 +30,8 @@ def list_accounts() -> list[dict]:
 @mcp.tool()
 def get_holdings() -> dict:
     """보유종목과 합산 평가금액·손익을 요약해서 반환합니다."""
-    return summarize(client().holdings())
+    c = client()
+    return summarize(c.holdings(), c.exchange_rate()["rate"])
 
 
 @mcp.tool()

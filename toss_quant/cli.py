@@ -19,7 +19,7 @@ def main() -> None:
         for a in client.accounts():
             print(f"accountSeq={a['accountSeq']}  {a['accountNo']}  {a['accountType']}")
     elif args.cmd == "holdings":
-        s = summarize(client.holdings())
+        s = summarize(client.holdings(), client.exchange_rate()["rate"])
         print(json.dumps(s, ensure_ascii=False, indent=2) if args.json else format_table(s))
 
 

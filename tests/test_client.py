@@ -81,3 +81,14 @@ def test_error_envelope_raises():
     with pytest.raises(TossApiError) as e:
         TossClient(CFG, s).accounts()
     assert e.value.code == "edge-blocked" and e.value.status == 403
+
+
+def test_combined_krw_with_usd_holdings():
+    h = json.loads(json.dumps(HOLDINGS["result"]))
+    h["marketValue"]["amount"]["usd"] = "100"
+    h["totalPurchaseAmount"]["usd"] = "90"
+    h["items"].append({**h["items"][0], "symbol": "AAPL", "name": "애플", "marketCountry": "US", "currency": "USD",
+                       "marketValue": {"purchaseAmount": "90", "amount": "100", "amountAfterCost": "100"}})
+    c = summarize(h, "1400")["combined_krw"]
+    assert c["market_value_krw"] == str(1100000 + 100 * 1400)
+    assert c["purchase_krw"] == str(1000000 + 90 * 1400)

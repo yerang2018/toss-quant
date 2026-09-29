@@ -49,7 +49,7 @@ def main() -> int:
             print("  ✗ 실패\n ", explain(e))
             return 1
     print("\n===== 내 보유종목 =====")
-    print(format_table(summarize(result)))
+    print(format_table(summarize(result, client.exchange_rate()["rate"])))
     print("\n모든 점검을 통과했습니다. 이제 Claude와 연결할 수 있습니다.")
     return 0
 

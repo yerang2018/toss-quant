@@ -119,6 +119,9 @@ class TossClient:
     def prices(self, symbols: list[str]) -> list[dict]:
         return self.request("GET", "/api/v1/prices", params={"symbols": ",".join(symbols)})
 
+    def exchange_rate(self, base: str = "USD", quote: str = "KRW") -> dict:
+        return self.request("GET", "/api/v1/exchange-rate", params={"baseCurrency": base, "quoteCurrency": quote})
+
     def candles(self, symbol: str, interval: str = "1d", count: int = 200, before: str | None = None,
                 adjusted: bool = True) -> dict:
         p = {"symbol": symbol, "interval": interval, "count": count, "adjusted": str(adjusted).lower()}
