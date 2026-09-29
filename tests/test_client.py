@@ -58,7 +58,9 @@ def test_holdings_sends_account_header_and_summarizes():
     data = TossClient(CFG, s).holdings()
     hdrs = s.calls[1][2]["headers"]
     assert hdrs["Authorization"] == "Bearer T1" and hdrs["X-Tossinvest-Account"] == "1"
-    assert summarize(data)["items"][0]["name"] == "삼성전자"
+    out = summarize(data)
+    assert out["items"][0]["name"] == "삼성전자"
+    assert out["by_market"]["KR"]["market_value"] == "1100000" and out["total_market_value"]["krw"] == "1100000"
 
 
 def test_token_cached_and_reissued_on_401():
