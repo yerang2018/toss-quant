@@ -52,5 +52,13 @@ def get_buying_power(currency: str = "KRW") -> dict:
     return client().buying_power(currency)
 
 
+@mcp.tool()
+def run_backtest(symbols: list[str] | None = None) -> str:
+    """20-60 골든크로스 + 200일선 눌림 진입 / 60일선 이탈·데드크로스 청산 전략을 백테스트합니다.
+    symbols를 생략하면 보유종목 중 ETF를 제외한 종목을 대상으로 합니다. (시세 수집으로 1~2분 걸릴 수 있음)"""
+    from .run_backtest import format_report, run
+    return format_report(run(client(), symbols))
+
+
 if __name__ == "__main__":
     mcp.run()

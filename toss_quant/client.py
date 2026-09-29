@@ -119,6 +119,9 @@ class TossClient:
     def prices(self, symbols: list[str]) -> list[dict]:
         return self.request("GET", "/api/v1/prices", params={"symbols": ",".join(symbols)})
 
+    def stocks(self, symbols: list[str]) -> list[dict]:
+        return self.request("GET", "/api/v1/stocks", params={"symbols": ",".join(symbols)})
+
     def exchange_rate(self, base: str = "USD", quote: str = "KRW") -> dict:
         return self.request("GET", "/api/v1/exchange-rate", params={"baseCurrency": base, "quoteCurrency": quote})
 
