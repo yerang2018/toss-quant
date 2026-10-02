@@ -33,3 +33,6 @@ Claude Code: `claude mcp add toss -- python -m toss_quant.mcp_server` (저장소
 - 토큰은 클라이언트당 1개만 유효합니다. 여러 프로세스가 각자 발급하면 서로 무효화되므로 `~/.cache/toss_quant/token.json`으로 공유합니다.
 - API 데이터는 본인 매매 목적 외 제3자 배포 금지(공식 FAQ).
 - 단기간 대량 주문은 어뷰징으로 제한될 수 있습니다.
+
+## 덤: 맛집 찾기 (네이버)
+naver-matjip + k-skill 블로그 후기 + Claude in Chrome 조합 세팅은 [맛집_시작하기.md](맛집_시작하기.md)를 참고하세요.
