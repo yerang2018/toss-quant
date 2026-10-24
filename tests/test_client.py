@@ -92,3 +92,25 @@ def test_combined_krw_with_usd_holdings():
     c = summarize(h, "1400")["combined_krw"]
     assert c["market_value_krw"] == str(1100000 + 100 * 1400)
     assert c["purchase_krw"] == str(1000000 + 90 * 1400)
+
+
+def test_proxy_is_applied_to_toss_requests():
+    s = FakeSession([TOKEN, Resp(200, {"result": []})])
+    TossClient(Config("id", "secret", proxy="http://1.2.3.4:3128"), s).accounts()
+    assert s.proxies == {"http": "http://1.2.3.4:3128", "https": "http://1.2.3.4:3128"}
+
+
+def test_ssh_tunnel_opened_once(monkeypatch):
+    opened = []
+    monkeypatch.setattr(client_mod.tunnel, "ensure", lambda t: opened.append(t) or "socks5h://127.0.0.1:1080")
+    s = FakeSession([TOKEN, Resp(200, {"result": []}), Resp(200, {"result": []})])
+    c = TossClient(Config("id", "secret", ssh_tunnel="me@server"), s)
+    c.accounts()
+    c.accounts()
+    assert opened == ["me@server"] and s.proxies["https"] == "socks5h://127.0.0.1:1080"
+
+
+def test_no_proxy_by_default():
+    s = FakeSession([TOKEN, Resp(200, {"result": []})])
+    TossClient(CFG, s).accounts()
+    assert not hasattr(s, "proxies")

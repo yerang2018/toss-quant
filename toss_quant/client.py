@@ -19,6 +19,7 @@ import urllib3.util.connection as _u3conn
 if os.environ.get("TOSS_FORCE_IPV4", "1") != "0":
     _u3conn.allowed_gai_family = lambda: socket.AF_INET
 
+from . import tunnel
 from .config import TOKEN_CACHE, Config
 
 
@@ -33,6 +34,16 @@ class TossClient:
         self.cfg = config
         self.http = session or requests.Session()
         self._account_seq = config.account_seq
+        self._proxy_ready = False
+
+    def _ensure_proxy(self) -> None:
+        """고정 IP 서버를 거치도록 설정되어 있으면 프록시를 붙인다(터널은 첫 요청 때 연다)."""
+        if self._proxy_ready:
+            return
+        proxy = self.cfg.proxy or (tunnel.ensure(self.cfg.ssh_tunnel) if self.cfg.ssh_tunnel else None)
+        if proxy:
+            self.http.proxies = {"http": proxy, "https": proxy}
+        self._proxy_ready = True
 
     # ---- 인증 ----
     def _load_cached_token(self) -> str | None:
@@ -45,6 +56,7 @@ class TossClient:
         return None
 
     def _issue_token(self) -> str:
+        self._ensure_proxy()
         r = self.http.post(
             f"{self.cfg.base_url}/oauth2/token",
             data={
@@ -78,6 +90,7 @@ class TossClient:
     # ---- 요청 ----
     def request(self, method: str, path: str, *, params: dict | None = None, json_body: Any = None,
                 account: bool = False, max_retries: int = 4) -> Any:
+        self._ensure_proxy()
         refreshed = False
         for attempt in range(max_retries + 1):
             headers = {"Authorization": f"Bearer {self.token()}"}

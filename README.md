@@ -29,6 +29,10 @@ python -m pytest
 Claude Code: `claude mcp add toss -- python -m toss_quant.mcp_server` (저장소 루트에서)
 노출 도구: `list_accounts`, `get_holdings`, `get_prices`, `get_open_orders`, `get_buying_power` (조회 전용, 주문 도구 없음)
 
+## IP 가 자주 바뀔 때
+`.env` 에 `TOSS_SSH_TUNNEL=user@고정IP서버` (SSH 키 로그인) 또는 `TOSS_PROXY=<프록시 URL>` 을 넣으면 토스증권 요청만 고정 IP 서버를 거칩니다.
+허용 IP 에는 그 서버 IP 만 등록하면 됩니다. 자세한 순서는 `시작하기.md` 참고.
+
 ## 주의
 - 토큰은 클라이언트당 1개만 유효합니다. 여러 프로세스가 각자 발급하면 서로 무효화되므로 `~/.cache/toss_quant/token.json`으로 공유합니다.
 - API 데이터는 본인 매매 목적 외 제3자 배포 금지(공식 FAQ).
