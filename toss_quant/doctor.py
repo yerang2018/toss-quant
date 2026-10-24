@@ -9,19 +9,28 @@ from .portfolio import format_table, summarize
 
 
 def my_ip() -> str:
-    try:
-        return requests.get("https://api.ipify.org", timeout=8).text.strip()
-    except requests.RequestException:
-        return "(확인 실패)"
+    """IPv4 와 IPv6 를 모두 보여준다. 네트워크가 IPv6 를 쓰면 토스증권에는 IPv6 주소로 보일 수 있다."""
+    out = []
+    for label, url in (("IPv4", "https://api.ipify.org"), ("IPv6", "https://api6.ipify.org")):
+        try:
+            out.append(f"{label} {requests.get(url, timeout=8).text.strip()}")
+        except requests.RequestException:
+            out.append(f"{label} 없음")
+    return " / ".join(out)
 
 
 def explain(e: Exception) -> str:
     if isinstance(e, TossApiError):
+        raw = f"(서버 응답: {e.status} {e.code} - {e.message})"
         if e.status == 403:
-            return ("허용 IP가 등록되지 않은 것 같습니다.\n"
-                    f"  → 토스증권 앱/웹 '설정 > Open API > 허용 IP 관리'에 이 IP를 등록하세요: {my_ip()}")
+            return ("허용 IP 문제일 가능성이 높습니다. " + raw + "\n"
+                    f"  → 지금 주소: {my_ip()}\n"
+                    "  → 토스증권 '설정 > Open API > 허용 IP 관리'에 위 주소가 있는지 확인하세요.\n"
+                    "    IPv4가 이미 등록되어 있는데도 막히면 IPv6 주소도 등록해 보세요.")
         if e.status == 401 or "invalid_client" in e.message:
-            return "키(client_id / client_secret)가 틀린 것 같습니다. 복사할 때 앞뒤 공백이 없는지 확인하고 .env를 다시 만드세요."
+            return ("인증 문제입니다. " + f"(서버 응답: {e.status} {e.code})" + "\n"
+                    "  → token-revoked 면 다른 곳에서 토큰을 새로 받은 것이니 다시 실행하면 됩니다.\n"
+                    "  → invalid_client 면 키가 틀린 것입니다. rm .env 후 python3 setup.py 로 다시 입력하세요.")
         if e.status == 429:
             return "요청이 너무 많았습니다. 잠시 후 다시 실행하세요."
         return f"토스증권 서버 응답 오류: {e}"
