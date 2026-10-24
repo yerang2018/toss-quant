@@ -7,10 +7,17 @@ from __future__ import annotations
 
 import json
 import os
+import socket
 import time
 from typing import Any
 
 import requests
+import urllib3.util.connection as _u3conn
+
+# 허용 IP 는 보통 IPv4 로 등록한다. IPv6 를 지원하는 네트워크(학교 등)에서는 IPv6 로 접속되어
+# 등록된 IPv4 와 달라 403 이 날 수 있으므로 기본적으로 IPv4 로만 접속한다. (TOSS_FORCE_IPV4=0 으로 해제)
+if os.environ.get("TOSS_FORCE_IPV4", "1") != "0":
+    _u3conn.allowed_gai_family = lambda: socket.AF_INET
 
 from .config import TOKEN_CACHE, Config
 
